@@ -158,7 +158,7 @@ a.chip:hover{filter:brightness(.96)}
   min-height:150px;
 }
 .tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
-.tile-cover{border-radius:11px;overflow:hidden;background:var(--cover);aspect-ratio:16/9;margin:-2px -2px 4px}
+.tile-cover{border-radius:11px;overflow:hidden;background:var(--cover);aspect-ratio:1/1;margin:-2px -2px 6px}
 .tile-cover img{width:100%;height:100%;object-fit:cover;display:block}
 .tile-title{font-family:"Poppins";font-weight:600;font-size:16px;line-height:1.25}
 .tile-author{color:var(--muted);font-size:13px;margin-top:-3px}
@@ -259,20 +259,20 @@ a.chip:hover{filter:brightness(.96)}
    • slug must match the folder name: lowercase letters, numbers, hyphens, no spaces.
    ============================================================================ */
 const BOOKS = [
-  { slug:"outrageous-openness",     title:"Outrageous Openness",                      author:"Tosha Silver",            tags:["Spirituality","Mindset"] },
-  { slug:"the-science-of-scaling",  title:"The Science of Scaling",                   author:"Ben Hardy",               tags:["Business","Growth","Sales"] },
-  { slug:"the-alter-ego-effect",    title:"The Alter Ego Effect",                     author:"Todd Herman",             tags:["Confidence","Mindset","Performance"] },
-  { slug:"the-practice-of-groundedness", title:"The Practice of Groundedness",        author:"Brad Stulberg",           tags:["Mindset","Wellbeing"] },
-  { slug:"never-finished",          title:"Never Finished",                           author:"David Goggins",           tags:["Resilience","Mindset","Performance"] },
-  { slug:"how-to-fail",             title:"How to Fail at Almost Everything and Still Win Big", author:"Scott Adams",    tags:["Business","Mindset","Habits"] },
-  { slug:"one-small-step",          title:"One Small Step Can Change Your Life",      author:"Robert Maurer",           tags:["Habits","Mindset"] },
-  { slug:"conquering-crisis",       title:"Conquering Crisis",                        author:"Admiral William H. McRaven", tags:["Leadership","Resilience"] },
-  { slug:"the-science-of-stuck",    title:"The Science of Stuck",                     author:"Britt Frank",             tags:["Mindset","Psychology"] },
-  { slug:"the-war-of-art",          title:"The War of Art",                           author:"Steven Pressfield",       tags:["Creativity","Resilience","Mindset"] },
-  { slug:"tiny-experiments",        title:"Tiny Experiments",                         author:"Anne-Laure Le Cunff",     tags:["Habits","Growth"] },
-  { slug:"the-way-of-excellence",   title:"The Way of Excellence",                    author:"Brad Stulberg",           tags:["Performance","Mindset"] },
-  { slug:"master-of-change",        title:"Master of Change",                         author:"Brad Stulberg",           tags:["Resilience","Mindset"] },
-  { slug:"tyson-fury-furious-method", title:"The Furious Method",                     author:"Tyson Fury",              tags:["Resilience","Mindset","Performance"] },
+  { slug:"outrageous-openness",     title:"Outrageous Openness",                      author:"Tosha Silver",            tags:["Spirituality","Mindset"] , cover:true },
+  { slug:"the-science-of-scaling",  title:"The Science of Scaling",                   author:"Ben Hardy",               tags:["Business","Growth","Sales"] , cover:true },
+  { slug:"the-alter-ego-effect",    title:"The Alter Ego Effect",                     author:"Todd Herman",             tags:["Confidence","Mindset","Performance"] , cover:true },
+  { slug:"the-practice-of-groundedness", title:"The Practice of Groundedness",        author:"Brad Stulberg",           tags:["Mindset","Wellbeing"] , cover:true },
+  { slug:"never-finished",          title:"Never Finished",                           author:"David Goggins",           tags:["Resilience","Mindset","Performance"] , cover:true },
+  { slug:"how-to-fail",             title:"How to Fail at Almost Everything and Still Win Big", author:"Scott Adams",    tags:["Business","Mindset","Habits"] , cover:true },
+  { slug:"one-small-step",          title:"One Small Step Can Change Your Life",      author:"Robert Maurer",           tags:["Habits","Mindset"] , cover:true },
+  { slug:"conquering-crisis",       title:"Conquering Crisis",                        author:"Admiral William H. McRaven", tags:["Leadership","Resilience"] , cover:true },
+  { slug:"the-science-of-stuck",    title:"The Science of Stuck",                     author:"Britt Frank",             tags:["Mindset","Psychology"] , cover:true },
+  { slug:"the-war-of-art",          title:"The War of Art",                           author:"Steven Pressfield",       tags:["Creativity","Resilience","Mindset"] , cover:true },
+  { slug:"tiny-experiments",        title:"Tiny Experiments",                         author:"Anne-Laure Le Cunff",     tags:["Habits","Growth"] , cover:true },
+  { slug:"the-way-of-excellence",   title:"The Way of Excellence",                    author:"Brad Stulberg",           tags:["Performance","Mindset"] , cover:true },
+  { slug:"master-of-change",        title:"Master of Change",                         author:"Brad Stulberg",           tags:["Resilience","Mindset"] , cover:true },
+  { slug:"tyson-fury-furious-method", title:"The Furious Method",                     author:"Tyson Fury",              tags:["Resilience","Mindset","Performance"] , cover:true },
 ];
 </script>
 <!-- ==================== stop editing here ==================== -->
