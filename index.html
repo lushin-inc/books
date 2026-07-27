@@ -235,6 +235,26 @@ a.chip:hover{filter:brightness(.96)}
 .state-card p:last-child{margin-bottom:0}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
 
+/* ---------- Native content page ---------- */
+.content{max-width:760px}
+.lede{font-size:18px;line-height:1.6;color:var(--ink);background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--acc,#2563EB);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);margin:2px 0 6px}
+.sec-h{font-family:"Poppins";font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--acc,#697386);margin:28px 0 12px}
+.ins-list{display:flex;flex-direction:column;gap:12px}
+.ins{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 18px;box-shadow:var(--shadow)}
+.ins-h{font-family:"Poppins";font-weight:600;font-size:15.5px;margin-bottom:3px}
+.ins-b{color:var(--muted);font-size:14.5px;line-height:1.55}
+.chk-list{display:flex;flex-direction:column;gap:9px}
+.chk{position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:13px 16px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .12s}
+.chk:hover{border-color:var(--muted)}
+.chk input{position:absolute;opacity:0;width:0;height:0}
+.chk-box{flex:none;width:22px;height:22px;border-radius:7px;border:1.9px solid var(--line);display:grid;place-items:center;color:transparent;transition:all .14s;margin-top:1px}
+.chk-box svg{width:15px;height:15px;stroke:#fff}
+.chk.done .chk-box{background:linear-gradient(135deg,var(--acc1,#10B981),var(--acc,#059669));border-color:transparent}
+.chk-txt{font-size:15px;line-height:1.5}
+.chk.done .chk-txt{color:var(--muted);text-decoration:line-through}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);
@@ -315,6 +335,33 @@ const TYPES = {
              c1:"#A855F7", c2:"#EC4899" },
 };
 
+/* ============================================================================
+   IN-APP CONTENT  —  optional. If a book+format has an entry here, its page
+   renders natively in the app (styled, interactive) instead of embedding a PDF.
+   To add one:  "<slug>": { insights: { coreIdea, points:[{h,b}], actions:[] } }
+   ============================================================================ */
+const CONTENT = {
+  "the-alter-ego-effect": {
+    insights: {
+      coreIdea: "You already have everything you need inside you. An Alter Ego is a deliberate, heroic version of yourself that you step into on your \"Field of Play\" — the specific arena where you most want to perform. It isn't pretending; it's a tool that lets your most capable self take over when self-doubt tries to run the show.",
+      points: [
+        { h:"Name your Field of Play", b:"Pick the one arena that matters most right now — a sales call, the stage, the gym. The Alter Ego is activated there, not everywhere at once." },
+        { h:"Separate your two selves", b:"The Trapped Self reacts out of fear and old stories; the Heroic Self is who you want leading. Naming the gap between them is what lets you close it." },
+        { h:"Give the Enemy a face", b:"Turn resistance, doubt, and procrastination into a named opponent outside you — something to beat, not evidence that something's wrong with you." },
+        { h:"Build it from traits you admire", b:"Borrow qualities from people you respect, real or fictional. You're not inventing a fake person — you're choosing which of your own capacities to lead with." },
+        { h:"Use a Totem to flip the switch", b:"A physical trigger — glasses, a bracelet, a jersey — becomes the cue that you're stepping in, the way Clark Kent's glasses signal the change. Put it on, become the Alter Ego." },
+      ],
+      actions: [
+        "Pick the one Field of Play where you most want to show up differently this week.",
+        "Write down the story your Enemy tells you — then give it a name.",
+        "Choose your Alter Ego and the three traits it leads with, and who inspires it.",
+        "Choose a Totem you'll wear or carry that activates it.",
+        "Before your next rep on that Field of Play, put on the Totem and step in.",
+      ],
+    },
+  },
+};
+
 /* ---------- icons ---------- */
 const P='stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
 const ICON={
@@ -324,6 +371,7 @@ const ICON={
   book:`<svg viewBox="0 0 24 24"><path ${P} d="M12 6c-2-1.5-5-1.5-8 0v13c3-1.5 6-1.5 8 0 2-1.5 6-1.5 8 0V6c-3-1.5-6-1.5-8 0Z"/><path ${P} d="M12 6v13"/></svg>`,
   chev:`<svg viewBox="0 0 24 24"><path ${P} d="m6 9 6 6 6-6"/></svg>`,
   back:`<svg viewBox="0 0 24 24"><path ${P} d="M15 6l-6 6 6 6"/></svg>`,
+  check:`<svg viewBox="0 0 24 24"><path ${P} d="m5 13 4 4L19 7"/></svg>`,
   menu:`<svg viewBox="0 0 24 24"><path ${P} d="M3 6h18M3 12h18M3 18h18"/></svg>`,
   search:`<svg viewBox="0 0 24 24"><circle ${P} cx="11" cy="11" r="7"/><path ${P} d="m21 21-4.3-4.3"/></svg>`,
   sun:`<svg viewBox="0 0 24 24"><circle ${P} cx="12" cy="12" r="4"/><path ${P} d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>`,
@@ -549,6 +597,31 @@ async function hydrateViewer(slug,key){
   }
 }
 
+/* ---------- native content page (renders CONTENT entries) ---------- */
+function renderContent(slug,key,c){
+  const b=bookBySlug(slug), t=TYPES[key];
+  if(!b||!t) return renderHome();
+  const lede = c.coreIdea ? `<div class="lede">${esc(c.coreIdea)}</div>` : "";
+  const points=(c.points||[]).map(p=>
+    `<div class="ins"><div class="ins-h">${esc(p.h)}</div><div class="ins-b">${esc(p.b)}</div></div>`).join("");
+  const insBlock = points ? `<h2 class="sec-h">Key insights</h2><div class="ins-list">${points}</div>` : "";
+  const acts=(c.actions||[]).map((a,i)=>
+    `<label class="chk"><input type="checkbox" data-ck="${slug}:${key}:${i}"><span class="chk-box">${ICON.check}</span><span class="chk-txt">${esc(a)}</span></label>`).join("");
+  const actBlock = acts ? `<h2 class="sec-h">Put it to work</h2><div class="chk-list">${acts}</div>` : "";
+  return delivHead(b,t)+`<div class="content" style="--acc:${t.c2};--acc1:${t.c1}">${lede}${insBlock}${actBlock}</div>`;
+}
+function hydrateContent(slug,key){
+  document.querySelectorAll('input[data-ck]').forEach(cb=>{
+    const id='sl-ck:'+cb.getAttribute('data-ck');
+    let on=false; try{ on=localStorage.getItem(id)==='1'; }catch(e){}
+    cb.checked=on; cb.closest('.chk').classList.toggle('done',on);
+    cb.addEventListener('change',()=>{
+      cb.closest('.chk').classList.toggle('done',cb.checked);
+      try{ localStorage.setItem(id, cb.checked?'1':'0'); }catch(e){}
+    });
+  });
+}
+
 /* ---------- sidebar ---------- */
 function buildSidebar(){
   const typeLinks=TYPE_ORDER.map(k=>{
@@ -586,7 +659,9 @@ function router(){
   const h=location.hash||"#/";
   let html, after=null;
   if(h.startsWith("#/book/")) html=renderBook(decodeURIComponent(h.slice(7)));
-  else if(h.startsWith("#/view/")){ const {slug,key}=parseSK(h.slice(7)); html=renderViewer(slug,key); after=()=>hydrateViewer(slug,key); }
+  else if(h.startsWith("#/view/")){ const {slug,key}=parseSK(h.slice(7)); const c=(CONTENT[slug]||{})[key];
+    if(c){ html=renderContent(slug,key,c); after=()=>hydrateContent(slug,key); }
+    else { html=renderViewer(slug,key); after=()=>hydrateViewer(slug,key); } }
   else if(h.startsWith("#/type/")) html=renderType(h.slice(7));
   else if(h.startsWith("#/tag/")) html=renderTag(decodeURIComponent(h.slice(6)));
   else html=renderHome();
