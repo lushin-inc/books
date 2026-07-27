@@ -299,20 +299,39 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;ba
    • slug must match the folder name: lowercase letters, numbers, hyphens, no spaces.
    ============================================================================ */
 const BOOKS = [
-  { slug:"outrageous-openness",     title:"Outrageous Openness",                      author:"Tosha Silver",            tags:["Spirituality","Mindset"] , cover:true },
-  { slug:"the-science-of-scaling",  title:"The Science of Scaling",                   author:"Ben Hardy",               tags:["Business","Growth","Sales"] , cover:true },
-  { slug:"the-alter-ego-effect",    title:"The Alter Ego Effect",                     author:"Todd Herman",             tags:["Confidence","Mindset","Performance"] , cover:true },
-  { slug:"the-practice-of-groundedness", title:"The Practice of Groundedness",        author:"Brad Stulberg",           tags:["Mindset","Wellbeing"] , cover:true },
-  { slug:"never-finished",          title:"Never Finished",                           author:"David Goggins",           tags:["Resilience","Mindset","Performance"] , cover:true },
-  { slug:"how-to-fail",             title:"How to Fail at Almost Everything and Still Win Big", author:"Scott Adams",    tags:["Business","Mindset","Habits"] , cover:true },
-  { slug:"one-small-step",          title:"One Small Step Can Change Your Life",      author:"Robert Maurer",           tags:["Habits","Mindset"] , cover:true },
-  { slug:"conquering-crisis",       title:"Conquering Crisis",                        author:"Admiral William H. McRaven", tags:["Leadership","Resilience"] , cover:true },
-  { slug:"the-science-of-stuck",    title:"The Science of Stuck",                     author:"Britt Frank",             tags:["Mindset","Psychology"] , cover:true },
-  { slug:"the-war-of-art",          title:"The War of Art",                           author:"Steven Pressfield",       tags:["Creativity","Resilience","Mindset"] , cover:true },
-  { slug:"tiny-experiments",        title:"Tiny Experiments",                         author:"Anne-Laure Le Cunff",     tags:["Habits","Growth"] , cover:true },
-  { slug:"the-way-of-excellence",   title:"The Way of Excellence",                    author:"Brad Stulberg",           tags:["Performance","Mindset"] , cover:true },
-  { slug:"master-of-change",        title:"Master of Change",                         author:"Brad Stulberg",           tags:["Resilience","Mindset"] , cover:true },
-  { slug:"tyson-fury-furious-method", title:"The Furious Method",                     author:"Tyson Fury",              tags:["Resilience","Mindset","Performance"] , cover:true },
+  { slug:"outrageous-openness", title:"Outrageous Openness", author:"Tosha Silver", tags:["Spirituality","Mindset"], cover:true, missing:["audio"] },
+  { slug:"the-science-of-scaling", title:"The Science of Scaling", author:"Ben Hardy", tags:["Business","Growth","Sales"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-alter-ego-effect", title:"The Alter Ego Effect", author:"Todd Herman", tags:["Confidence","Mindset","Performance"], cover:true, missing:["spoken","images","audio"] },
+  { slug:"the-practice-of-groundedness", title:"The Practice of Groundedness", author:"Brad Stulberg", tags:["Mindset","Wellbeing"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"never-finished", title:"Never Finished", author:"David Goggins", tags:["Resilience","Mindset","Performance"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"how-to-fail", title:"How to Fail at Almost Everything and Still Win Big", author:"Scott Adams", tags:["Business","Mindset","Habits"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"one-small-step", title:"One Small Step Can Change Your Life", author:"Robert Maurer", tags:["Habits","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"conquering-crisis", title:"Conquering Crisis", author:"Admiral William H. McRaven", tags:["Leadership","Resilience"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-science-of-stuck", title:"The Science of Stuck", author:"Britt Frank", tags:["Mindset","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-war-of-art", title:"The War of Art", author:"Steven Pressfield", tags:["Creativity","Resilience","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"tiny-experiments", title:"Tiny Experiments", author:"Anne-Laure Le Cunff", tags:["Habits","Growth"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-way-of-excellence", title:"The Way of Excellence", author:"Brad Stulberg", tags:["Performance","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"master-of-change", title:"Master of Change", author:"Brad Stulberg", tags:["Resilience","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"tyson-fury-furious-method", title:"The Furious Method", author:"Tyson Fury", tags:["Resilience","Mindset","Performance"], cover:true, missing:["audio"] },
+  { slug:"abandonment-to-divine-providence", title:"Abandonment to Divine Providence", author:"Jean-Pierre de Caussade", tags:["Spirituality","Faith"], cover:true, missing:["audio"] },
+  { slug:"antifragile", title:"Antifragile", author:"Nassim Nicholas Taleb", tags:["Resilience","Mindset","Business"], cover:true, missing:["audio"] },
+  { slug:"at-your-best", title:"At Your Best", author:"Carey Nieuwhof", tags:["Productivity","Habits","Wellbeing"], cover:true, missing:["spoken","audio"] },
+  { slug:"audhd", title:"AuDHD", author:"Leanne Maskell", tags:["Neurodiversity","Parenting","Psychology"], cover:true, missing:["audio"] },
+  { slug:"becoming-orthodox", title:"Becoming Orthodox", author:"Fr. Peter E. Gillquist", tags:["Spirituality","Faith"], cover:true, missing:["spoken","audio"] },
+  { slug:"how-good-do-you-want-to-be", title:"How Good Do You Want to Be?", author:"Nick Saban", tags:["Leadership","Performance","Mindset"], cover:true, missing:["insights","images","audio"] },
+  { slug:"how-to-stop-worrying", title:"How to Stop Worrying and Start Living", author:"Dale Carnegie", tags:["Mindset","Wellbeing","Psychology"], cover:true, missing:["audio"] },
+  { slug:"magic-of-believing", title:"The Magic of Believing", author:"Claude M. Bristol", tags:["Mindset","Confidence","Spirituality"], cover:true, missing:["audio"] },
+  { slug:"the-comfort-crisis", title:"The Comfort Crisis", author:"Michael Easter", tags:["Resilience","Wellbeing","Mindset"], cover:true, missing:["audio"] },
+  { slug:"the-confident-mind", title:"The Confident Mind", author:"Nathaniel Zinsser", tags:["Confidence","Performance","Mindset"], cover:true },
+  { slug:"the-out-of-sync-child", title:"The Out-of-Sync Child", author:"Carol Stock Kranowitz", tags:["Parenting","Neurodiversity","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-reason-i-jump", title:"The Reason I Jump", author:"Naoki Higashida", tags:["Neurodiversity","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-sales-coachs-playbook", title:"The Sales Coach's Playbook", author:"Bill Bartlett", tags:["Sales","Leadership","Business"], cover:true, missing:["audio"] },
+  { slug:"the-score-takes-care-of-itself", title:"The Score Takes Care of Itself", author:"Bill Walsh", tags:["Leadership","Performance","Business"], cover:true, missing:["audio"] },
+  { slug:"thinking-inside-the-crease", title:"Thinking Inside the Crease", author:"Christian K. Buck", tags:["Performance","Mindset"], cover:true, missing:["audio"] },
+  { slug:"twelve-week-year", title:"The 12 Week Year", author:"Brian P. Moran & Michael Lennington", tags:["Productivity","Business","Habits"], cover:true, missing:["spoken","audio"] },
+  { slug:"way-of-the-champion", title:"The Way of the Champion", author:"Paul Rabil", tags:["Performance","Resilience","Mindset"], cover:true, missing:["audio"] },
+  { slug:"who-needs-friends", title:"Who Needs Friends?", author:"Andrew McCarthy", tags:["Relationships","Wellbeing"], cover:true, missing:["images","audio"] },
+  { slug:"your-word-is-your-wand", title:"Your Word Is Your Wand", author:"Florence Scovel Shinn", tags:["Spirituality","Mindset"], cover:true },
 ];
 </script>
 <!-- ==================== stop editing here ==================== -->
@@ -404,7 +423,7 @@ function tags(list,link){
 
 /* ---------- views ---------- */
 function tileHTML(b){
-  const cover = b.cover ? `<div class="tile-cover"><img src="files/${b.slug}/cover.jpg" alt="" loading="lazy"></div>` : "";
+  const cover = b.cover ? `<div class="tile-cover"><img src="files/${b.slug}/cover.jpg" alt="" onerror="this.closest('.tile-cover').remove()"></div>` : "";
   return `<a class="tile" href="#/book/${b.slug}">
     ${cover}
     <div class="tile-title">${esc(b.title)}</div>
