@@ -1,639 +1,812 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home Nation — Sales Gates</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Reads .docx text so the Spoken Companion can be copied to the clipboard. Local, no external calls. -->
+<script src="vendor/mammoth.browser.min.js" defer></script>
 <style>
-  :root {
-    --bg: #F5F7FA;
-    --surface: #FFFFFF;
-    --surface-hover: #F9FBFD;
-    --border: #DDE3EC;
-    --text: #1A2B4A;
-    --text-muted: #647085;
-    --hn-navy: #1E4E8C;
-    --hn-red: #B71F2E;
-    --accent-close: #2F8A4C;
-    --stage-ds: #B71F2E;
-    --stage-he: #C94A45;
-    --stage-ap: #2B5EA7;
-    --stage-dc: #3A5A8C;
-    --stage-in: #B07E1E;
-    --stage-sa: #2F8A4C;
-    --stage-so: #1F6B3A;
-    --card-radius: 14px;
-    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  }
+/* ---------- Theme tokens ---------- */
+:root{
+  --bg:#F4F5F7; --surface:#FFFFFF; --surface-2:#F0F2F5;
+  --ink:#171A21; --muted:#697386; --line:#E6E8EE;
+  --chip-bg:#EDF0F4; --chip-ink:#4A5568;
+  --cover:#EAEEF3; --ring:#2563EB;
+  --shadow:0 1px 2px rgba(16,24,40,.04), 0 10px 26px -14px rgba(16,24,40,.16);
+  --shadow-hover:0 1px 2px rgba(16,24,40,.05), 0 22px 44px -18px rgba(16,24,40,.24);
+}
+:root[data-theme="dark"]{
+  --bg:#0D0F13; --surface:#171A20; --surface-2:#1E222A;
+  --ink:#EDEFF3; --muted:#9AA1AD; --line:#262B33;
+  --chip-bg:#222732; --chip-ink:#B7BFCC;
+  --cover:#1C212A; --ring:#60A5FA;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 30px -16px rgba(0,0,0,.65);
+  --shadow-hover:0 1px 2px rgba(0,0,0,.35), 0 26px 50px -20px rgba(0,0,0,.8);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+:focus-visible{outline:2px solid var(--ring);outline-offset:2px;border-radius:8px}
+svg{display:block}
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:40;height:56px;
+  display:flex;align-items:center;gap:8px;
+  padding:0 14px;background:color-mix(in srgb,var(--bg) 82%, transparent);
+  backdrop-filter:saturate(1.1) blur(8px);
+}
+.icon-btn{
+  width:40px;height:40px;border-radius:10px;display:grid;place-items:center;
+  color:var(--muted);transition:background .15s,color .15s;
+}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink)}
+.icon-btn svg{width:22px;height:22px}
+.topbar .spacer{flex:1}
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ---------- Sidebar ---------- */
+.sidebar{
+  position:fixed;top:0;left:0;height:100vh;width:268px;z-index:60;
+  background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  transform:translateX(-100%);transition:transform .24s ease;
+  overflow-y:auto;overscroll-behavior:contain;
+}
+body.nav-on .sidebar{transform:none}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  padding:18px 18px 12px;
+}
+.brand-mark{
+  width:30px;height:30px;border-radius:9px;flex:none;
+  background:linear-gradient(135deg,#4F46E5,#0D9488);
+  display:grid;place-items:center;color:#fff;
+}
+.brand-mark svg{width:17px;height:17px;stroke:#fff}
+.brand-name{font-family:"Poppins";font-weight:600;font-size:16px;letter-spacing:.01em}
+.side-close{margin-left:auto}
+@media(min-width:1000px){.side-close{display:none}}
 
-  /* ── HEADER ── */
-  .header {
-    padding: 40px 40px 0;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
+.search{padding:4px 14px 10px}
+.search-wrap{position:relative;display:flex;align-items:center}
+.search-wrap svg{position:absolute;left:11px;width:17px;height:17px;color:var(--muted);pointer-events:none}
+.search input{
+  width:100%;padding:9px 30px 9px 34px;border-radius:10px;
+  background:var(--surface-2);border:1px solid transparent;color:var(--ink);
+  font-size:14px;
+}
+.search input::placeholder{color:var(--muted)}
+.search input:focus{border-color:var(--line);outline:none}
+.search-clear{position:absolute;right:6px;width:24px;height:24px;border-radius:6px;display:none;place-items:center;color:var(--muted)}
+.search-clear.show{display:grid}
+.search-clear svg{width:15px;height:15px}
 
-  .header-top {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
-  }
+.nav{padding:4px 10px 20px;flex:1}
+.nav-link{
+  display:flex;align-items:center;gap:11px;
+  padding:9px 10px;border-radius:9px;color:var(--muted);
+  font-size:14px;font-weight:500;transition:background .12s,color .12s;
+}
+.nav-link:hover{background:var(--surface-2);color:var(--ink)}
+.nav-link.active{background:var(--surface-2);color:var(--ink)}
+.nav-link svg{width:19px;height:19px;flex:none}
+.nav-link .dotmark{width:9px;height:9px;border-radius:50%;flex:none;margin:0 5px}
 
-  .header h1 {
-    font-size: 34px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
-    line-height: 1.1;
-    color: var(--hn-navy);
-  }
+.sec{margin-top:14px}
+.sec-head{
+  display:flex;align-items:center;gap:6px;width:100%;
+  padding:7px 10px;color:var(--muted);
+  font-size:11px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+}
+.sec-head .chev{margin-left:auto;transition:transform .18s;width:15px;height:15px}
+.sec.collapsed .chev{transform:rotate(-90deg)}
+.sec-body{overflow:hidden}
+.sec.collapsed .sec-body{display:none}
 
-  .header h1 span { color: var(--hn-red); }
+.theme-row{padding:14px;border-top:1px solid var(--line)}
+.theme-btn{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:9px 10px;border-radius:9px;color:var(--muted);font-size:14px;font-weight:500;
+}
+.theme-btn:hover{background:var(--surface-2);color:var(--ink)}
+.theme-btn svg{width:19px;height:19px}
 
-  .header-rule {
-    height: 4px;
-    width: 64px;
-    background: var(--hn-red);
-    border-radius: 2px;
-    margin: 14px 0 28px;
-  }
+/* scrim (mobile) */
+.scrim{
+  position:fixed;inset:0;z-index:55;background:rgba(6,8,12,.42);
+  opacity:0;visibility:hidden;transition:opacity .2s;
+}
+@media(max-width:999px){body.nav-on .scrim{opacity:1;visibility:visible}}
 
-  /* ── TIMELINE RAIL ── */
-  .timeline-nav {
-    padding: 10px 40px 0;
-    max-width: 1400px;
-    margin: 0 auto;
-    position: relative;
-  }
+/* ---------- Main ---------- */
+main{margin-left:0;transition:margin-left .24s ease}
+@media(min-width:1000px){body.nav-on main{margin-left:268px}}
+.wrap{max-width:1080px;margin:0 auto;padding:26px 28px 80px}
+@media(max-width:600px){.wrap{padding:18px 16px 64px}}
 
-  .rail {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    position: relative;
-    padding: 0 10px;
-  }
+.page-head{margin:6px 0 26px}
+.eyebrow{font-size:11.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.page-title{font-family:"Poppins";font-weight:600;font-size:clamp(24px,4vw,32px);line-height:1.14;margin:0}
+.page-sub{color:var(--muted);font-size:15px;margin:7px 0 0}
 
-  .rail-line {
-    position: absolute;
-    top: 19px;
-    left: 40px;
-    right: 100px;
-    height: 2px;
-    background: var(--border);
-    z-index: 0;
-  }
+/* chips (tags) */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  font-size:12px;font-weight:500;color:var(--chip-ink);
+  background:var(--chip-bg);padding:4px 10px;border-radius:999px;
+  transition:filter .12s;
+}
+a.chip:hover{filter:brightness(.96)}
+:root[data-theme="dark"] a.chip:hover{filter:brightness(1.25)}
 
-  .rail-node {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    z-index: 1;
-    flex: 1;
-    transition: var(--transition);
-  }
+/* ---------- Book grid (home) ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:18px}
+.tile{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:16px 16px 14px;display:flex;flex-direction:column;gap:9px;
+  box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s,border-color .16s;
+  min-height:150px;
+}
+.tile:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover)}
+.tile-cover{border-radius:11px;overflow:hidden;background:var(--cover);aspect-ratio:1/1;margin:-2px -2px 6px}
+.tile-cover img{width:100%;height:100%;object-fit:cover;display:block}
+.tile-title{font-family:"Poppins";font-weight:600;font-size:16px;line-height:1.25}
+.tile-author{color:var(--muted);font-size:13px;margin-top:-3px}
+.tile-tags{margin-top:2px}
+.dots{display:flex;gap:7px;margin-top:auto;padding-top:10px}
+.dot{width:9px;height:9px;border-radius:50%}
+.dot.off{background:transparent;box-shadow:inset 0 0 0 1.6px var(--line)}
 
-  .rail-node:last-child { flex: 0; min-width: 70px; }
+/* ---------- Book page: chooser ---------- */
+.chooser{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;max-width:780px}
+@media(max-width:700px){.chooser{grid-template-columns:1fr}}
+.deliv{
+  position:relative;border-radius:18px;padding:20px 20px 18px;min-height:172px;
+  display:flex;flex-direction:column;color:#fff;overflow:hidden;
+  transition:transform .16s,box-shadow .16s;
+}
+.deliv:hover{transform:translateY(-4px)}
+.deliv-ico{width:34px;height:34px;opacity:.96}
+.deliv-ico svg{width:34px;height:34px;stroke:#fff}
+.deliv-name{font-family:"Poppins";font-weight:600;font-size:21px;line-height:1.2;margin-top:auto}
+.deliv-act{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;opacity:.94;margin-top:9px}
+.deliv-act svg{width:16px;height:16px;stroke:#fff}
+.deliv.missing{
+  color:var(--muted);background:var(--surface);border:1px dashed var(--line);
+  box-shadow:none;cursor:default;
+}
+.deliv.missing .deliv-ico svg,.deliv.missing .deliv-act svg{stroke:var(--muted)}
+.deliv.missing .deliv-name{color:var(--ink)}
+.deliv.missing:hover{transform:none}
+.deliv[role=button]{cursor:pointer}
+.deliv[role=button]:focus-visible{outline:3px solid rgba(255,255,255,.85);outline-offset:2px}
+.deliv-actrow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px}
+.deliv-actrow .deliv-act{margin-top:0}
+.deliv-dl{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;flex:none;
+  background:rgba(255,255,255,.16);color:#fff;text-decoration:none;transition:background .15s}
+.deliv-dl:hover{background:rgba(255,255,255,.30)}
+.deliv-dl svg{width:16px;height:16px;stroke:#fff}
+.deliv-dl:focus-visible{outline:2px solid #fff;outline-offset:2px}
 
-  .node-dot {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 11px;
-    letter-spacing: 0.3px;
-    transition: var(--transition);
-    border: 2px solid transparent;
-    position: relative;
-  }
+/* ---------- Type page: file cards ---------- */
+.type-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.tcard{
+  display:flex;align-items:center;gap:14px;
+  background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:15px 16px;box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .15s;
+}
+.tcard:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.tcard-ico{width:42px;height:42px;border-radius:11px;flex:none;display:grid;place-items:center}
+.tcard-ico svg{width:22px;height:22px;stroke:#fff}
+.tcard-main{flex:1;min-width:0}
+.tcard-title{font-family:"Poppins";font-weight:600;font-size:15.5px;line-height:1.25;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcard-author{color:var(--muted);font-size:13px}
+.tcard-act{color:var(--muted);flex:none}
+.tcard-act svg{width:18px;height:18px}
 
-  .rail-node:hover .node-dot { transform: scale(1.15); }
-  .rail-node.active .node-dot {
-    transform: scale(1.2);
-    box-shadow: 0 4px 14px rgba(26,43,74,0.25);
-  }
+/* ---------- PDF viewer (in-app page) ---------- */
+.backlink{display:inline-flex;align-items:center;gap:5px;margin-bottom:14px}
+.backlink svg{width:15px;height:15px}
+.viewer-top{display:flex;flex-wrap:wrap;gap:10px;margin:2px 0 16px}
+.vbtn{display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--line);color:var(--ink);
+  font-family:"Poppins";font-weight:600;font-size:14px;box-shadow:var(--shadow);transition:transform .15s,box-shadow .15s}
+.vbtn:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.vbtn svg{width:17px;height:17px;stroke:var(--ink)}
+.vbtn-primary{color:#fff;border:none}
+.vbtn-primary svg{stroke:#fff}
+.pdf-frame{width:100%;height:78vh;min-height:520px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow)}
+.pdf-loading{display:grid;place-items:center;color:var(--muted)}
+.state-card{max-width:640px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--ring);
+  border-radius:14px;padding:20px 22px;box-shadow:var(--shadow)}
+.state-title{font-family:"Poppins";font-weight:600;font-size:18px;color:var(--ink);margin:0 0 6px}
+.state-card p{color:var(--muted);margin:0 0 10px}
+.state-card p:last-child{margin-bottom:0}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;background:var(--surface-2);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
 
-  .node-label {
-    margin-top: 8px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-align: center;
-    transition: var(--transition);
-    white-space: nowrap;
-  }
+/* ---------- Native content page ---------- */
+.content{max-width:760px}
+.lede{font-size:18px;line-height:1.6;color:var(--ink);background:var(--surface);border:1px solid var(--line);
+  border-left:4px solid var(--acc,#2563EB);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow);margin:2px 0 6px}
+.sec-h{font-family:"Poppins";font-weight:600;font-size:14px;letter-spacing:.05em;text-transform:uppercase;color:var(--acc,#697386);margin:28px 0 12px}
+.ins-list{display:flex;flex-direction:column;gap:12px}
+.ins{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 18px;box-shadow:var(--shadow)}
+.ins-h{font-family:"Poppins";font-weight:600;font-size:15.5px;margin-bottom:3px}
+.ins-b{color:var(--muted);font-size:14.5px;line-height:1.55}
+.chk-list{display:flex;flex-direction:column;gap:9px}
+.chk{position:relative;display:flex;align-items:flex-start;gap:13px;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:13px 16px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .12s}
+.chk:hover{border-color:var(--muted)}
+.chk input{position:absolute;opacity:0;width:0;height:0}
+.chk-box{flex:none;width:22px;height:22px;border-radius:7px;border:1.9px solid var(--line);display:grid;place-items:center;color:transparent;transition:all .14s;margin-top:1px}
+.chk-box svg{width:15px;height:15px;stroke:#fff}
+.chk.done .chk-box{background:linear-gradient(135deg,var(--acc1,#10B981),var(--acc,#059669));border-color:transparent}
+.chk-txt{font-size:15px;line-height:1.5}
+.chk.done .chk-txt{color:var(--muted);text-decoration:line-through}
 
-  .rail-node.active .node-label { color: var(--text); }
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);
+  max-width:min(520px,calc(100vw - 32px));z-index:60;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);
+  border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.4;
+  box-shadow:var(--shadow-hover);opacity:0;pointer-events:none;
+  transition:opacity .2s,transform .2s;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;
+  background:var(--bg);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+@media(prefers-reduced-motion:reduce){.toast{transition:opacity .2s}}
 
-  /* ── STAGE DETAIL PANEL ── */
-  .stage-panel {
-    max-width: 1400px;
-    margin: 28px auto 0;
-    padding: 0 40px 50px;
-    animation: panelIn 0.3s ease;
-  }
+/* empty state */
+.empty{padding:64px 8px;text-align:center;color:var(--muted)}
+.empty .page-title{color:var(--ink);margin-bottom:6px}
 
-  @keyframes panelIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .panel-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-  }
-
-  .panel-badge {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 6px 14px;
-    border-radius: 8px;
-    text-transform: uppercase;
-  }
-
-  .panel-title {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    color: var(--hn-navy);
-  }
-
-  .panel-note {
-    font-size: 12px;
-    color: var(--text-muted);
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    padding: 5px 12px;
-    background: var(--surface);
-  }
-
-  .panel-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
-
-  @media (max-width: 800px) {
-    .panel-grid { grid-template-columns: 1fr; }
-    .header, .timeline-nav, .stage-panel { padding-left: 20px; padding-right: 20px; }
-    .header h1 { font-size: 26px; }
-    .rail-line { left: 20px; right: 50px; }
-    .node-label { white-space: normal; font-size: 9px; }
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--card-radius);
-    padding: 24px;
-    transition: var(--transition);
-    box-shadow: 0 1px 3px rgba(26,43,74,0.06);
-  }
-
-  .card:hover { border-color: #C6CFDD; background: var(--surface-hover); }
-
-  .card-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 14px;
-  }
-
-  .card ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .card li {
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: var(--text);
-    padding-left: 20px;
-    position: relative;
-  }
-
-  .card li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 7px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--hn-navy);
-    opacity: 0.4;
-  }
-
-  .card li em {
-    font-style: normal;
-    color: var(--hn-red);
-    font-weight: 600;
-  }
-
-  /* ── EXIT CRITERIA CARD ── */
-  .exit-card {
-    border-left: 3px solid;
-  }
-
-  .exit-card .card-label { display: flex; align-items: center; gap: 8px; }
-  .exit-card .card-label::before {
-    content: '✓';
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 5px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-
-  .exit-card li {
-    cursor: pointer;
-    user-select: none;
-    transition: var(--transition);
-    padding-left: 28px;
-  }
-
-  .exit-card li::before {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border-radius: 5px;
-    border: 1.5px solid var(--text-muted);
-    background: transparent;
-    top: 3px;
-    left: 0;
-    opacity: 1;
-    transition: var(--transition);
-  }
-
-  .exit-card li.checked {
-    color: var(--text-muted);
-    text-decoration: line-through;
-    text-decoration-color: rgba(100,112,133,0.45);
-  }
-
-  .exit-card li.checked::before {
-    border-color: var(--accent-close);
-    background: var(--accent-close);
-  }
-
-  .exit-card li.checked::after {
-    content: '✓';
-    position: absolute;
-    left: 3px;
-    top: 4px;
-    font-size: 10px;
-    color: white;
-    font-weight: 700;
-  }
-
-  /* ── FIELD NOTE ── */
-  .coaching-tip {
-    grid-column: 1 / -1;
-    background: linear-gradient(135deg, rgba(30,78,140,0.05) 0%, rgba(30,78,140,0.02) 100%);
-    border: 1px solid rgba(30,78,140,0.18);
-    border-radius: var(--card-radius);
-    padding: 18px 24px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-  }
-
-  .tip-icon {
-    font-size: 20px;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-
-  .tip-text {
-    font-size: 13.5px;
-    line-height: 1.6;
-    color: var(--text);
-  }
-
-  .tip-text strong { color: var(--hn-red); font-weight: 700; }
-
-  /* ── RESET BUTTON ── */
-  .reset-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: var(--transition);
-    z-index: 100;
-    display: none;
-    box-shadow: 0 2px 8px rgba(26,43,74,0.1);
-  }
-
-  .reset-btn:hover { background: var(--surface-hover); color: var(--text); }
-  .reset-btn.visible { display: block; }
+@media(prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <h1>Home Nation <span>Sales Gates</span></h1>
-  </div>
-  <div class="header-rule"></div>
-</div>
+<!-- ==================== EDIT ONLY THE BOOKS ARRAY BELOW ==================== -->
+<script>
+/* ============================================================================
+   STUDY LIBRARY  —  to add a book, edit ONLY the BOOKS array below.
 
-<div class="timeline-nav">
-  <div class="rail">
-    <div class="rail-line"></div>
-    <div class="rail-node active" data-stage="ds" onclick="showStage('ds')">
-      <div class="node-dot" style="background:var(--stage-ds); color:#fff;">DS</div>
-      <div class="node-label">Discovery</div>
-    </div>
-    <div class="rail-node" data-stage="he" onclick="showStage('he')">
-      <div class="node-dot" style="background:var(--stage-he); color:#fff;">HE</div>
-      <div class="node-label">Home Estimate</div>
-    </div>
-    <div class="rail-node" data-stage="ap" onclick="showStage('ap')">
-      <div class="node-dot" style="background:var(--stage-ap); color:#fff;">AP</div>
-      <div class="node-label">Application</div>
-    </div>
-    <div class="rail-node" data-stage="dc" onclick="showStage('dc')">
-      <div class="node-dot" style="background:var(--stage-dc); color:#fff;">DC</div>
-      <div class="node-label">Docs</div>
-    </div>
-    <div class="rail-node" data-stage="in" onclick="showStage('in')">
-      <div class="node-dot" style="background:var(--stage-in); color:#fff;">IN</div>
-      <div class="node-label">Installer</div>
-    </div>
-    <div class="rail-node" data-stage="sa" onclick="showStage('sa')">
-      <div class="node-dot" style="background:var(--stage-sa); color:#fff;">SA</div>
-      <div class="node-label">Sales Agreement</div>
-    </div>
-    <div class="rail-node" data-stage="so" onclick="showStage('so')">
-      <div class="node-dot" style="background:var(--stage-so); color:#fff;">SO</div>
-      <div class="node-label">Sold</div>
-    </div>
-  </div>
-</div>
+   1) Make a folder:   files/<slug>/
+   2) Drop the four files in it, named EXACTLY:
+        spoken.docx     Spoken Companion   (Word / Speechify)
+        insights.pdf    Insights + Action Guide
+        images.pdf      Concept Atlas      (images only)
+        audio.pdf       Atlas Audio Companion  (Speechify)
+      Optional:  cover.jpg   a cover image for the tile
+   3) Add ONE line to BOOKS:
+        { slug:"my-book", title:"My Book", author:"Author Name", tags:["Mindset"] },
 
-<div id="stage-panel" class="stage-panel"></div>
-
-<button class="reset-btn" id="resetBtn" onclick="resetChecks()">↻ Reset Checklist</button>
+   • The Topics list in the sidebar builds itself from the tags you use here.
+   • Missing a file for now?   add   missing:["audio"]   (or several).
+   • Added a cover.jpg?         add   cover:true
+   • slug must match the folder name: lowercase letters, numbers, hyphens, no spaces.
+   ============================================================================ */
+const BOOKS = [
+  { slug:"outrageous-openness", title:"Outrageous Openness", author:"Tosha Silver", tags:["Spirituality","Mindset"], cover:true, missing:["audio"] },
+  { slug:"the-science-of-scaling", title:"The Science of Scaling", author:"Ben Hardy", tags:["Business","Growth","Sales"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-alter-ego-effect", title:"The Alter Ego Effect", author:"Todd Herman", tags:["Confidence","Mindset","Performance"], cover:true, missing:["spoken","images","audio"] },
+  { slug:"the-practice-of-groundedness", title:"The Practice of Groundedness", author:"Brad Stulberg", tags:["Mindset","Wellbeing"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"never-finished", title:"Never Finished", author:"David Goggins", tags:["Resilience","Mindset","Performance"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"how-to-fail", title:"How to Fail at Almost Everything and Still Win Big", author:"Scott Adams", tags:["Business","Mindset","Habits"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"one-small-step", title:"One Small Step Can Change Your Life", author:"Robert Maurer", tags:["Habits","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"conquering-crisis", title:"Conquering Crisis", author:"Admiral William H. McRaven", tags:["Leadership","Resilience"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-science-of-stuck", title:"The Science of Stuck", author:"Britt Frank", tags:["Mindset","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-war-of-art", title:"The War of Art", author:"Steven Pressfield", tags:["Creativity","Resilience","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"tiny-experiments", title:"Tiny Experiments", author:"Anne-Laure Le Cunff", tags:["Habits","Growth"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"the-way-of-excellence", title:"The Way of Excellence", author:"Brad Stulberg", tags:["Performance","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"master-of-change", title:"Master of Change", author:"Brad Stulberg", tags:["Resilience","Mindset"], cover:true, missing:["spoken","insights","images","audio"] },
+  { slug:"tyson-fury-furious-method", title:"The Furious Method", author:"Tyson Fury", tags:["Resilience","Mindset","Performance"], cover:true, missing:["audio"] },
+  { slug:"abandonment-to-divine-providence", title:"Abandonment to Divine Providence", author:"Jean-Pierre de Caussade", tags:["Spirituality","Faith"], cover:true, missing:["audio"] },
+  { slug:"antifragile", title:"Antifragile", author:"Nassim Nicholas Taleb", tags:["Resilience","Mindset","Business"], cover:true, missing:["audio"] },
+  { slug:"at-your-best", title:"At Your Best", author:"Carey Nieuwhof", tags:["Productivity","Habits","Wellbeing"], cover:true, missing:["spoken","audio"] },
+  { slug:"audhd", title:"AuDHD", author:"Leanne Maskell", tags:["Neurodiversity","Parenting","Psychology"], cover:true, missing:["audio"] },
+  { slug:"becoming-orthodox", title:"Becoming Orthodox", author:"Fr. Peter E. Gillquist", tags:["Spirituality","Faith"], cover:true, missing:["spoken","audio"] },
+  { slug:"how-good-do-you-want-to-be", title:"How Good Do You Want to Be?", author:"Nick Saban", tags:["Leadership","Performance","Mindset"], cover:true, missing:["insights","images","audio"] },
+  { slug:"how-to-stop-worrying", title:"How to Stop Worrying and Start Living", author:"Dale Carnegie", tags:["Mindset","Wellbeing","Psychology"], cover:true, missing:["audio"] },
+  { slug:"magic-of-believing", title:"The Magic of Believing", author:"Claude M. Bristol", tags:["Mindset","Confidence","Spirituality"], cover:true, missing:["audio"] },
+  { slug:"the-comfort-crisis", title:"The Comfort Crisis", author:"Michael Easter", tags:["Resilience","Wellbeing","Mindset"], cover:true, missing:["audio"] },
+  { slug:"the-confident-mind", title:"The Confident Mind", author:"Nathaniel Zinsser", tags:["Confidence","Performance","Mindset"], cover:true },
+  { slug:"the-out-of-sync-child", title:"The Out-of-Sync Child", author:"Carol Stock Kranowitz", tags:["Parenting","Neurodiversity","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-reason-i-jump", title:"The Reason I Jump", author:"Naoki Higashida", tags:["Neurodiversity","Psychology"], cover:true, missing:["audio"] },
+  { slug:"the-sales-coachs-playbook", title:"The Sales Coach's Playbook", author:"Bill Bartlett", tags:["Sales","Leadership","Business"], cover:true, missing:["audio"] },
+  { slug:"the-score-takes-care-of-itself", title:"The Score Takes Care of Itself", author:"Bill Walsh", tags:["Leadership","Performance","Business"], cover:true, missing:["audio"] },
+  { slug:"thinking-inside-the-crease", title:"Thinking Inside the Crease", author:"Christian K. Buck", tags:["Performance","Mindset"], cover:true, missing:["audio"] },
+  { slug:"twelve-week-year", title:"The 12 Week Year", author:"Brian P. Moran & Michael Lennington", tags:["Productivity","Business","Habits"], cover:true, missing:["spoken","audio"] },
+  { slug:"way-of-the-champion", title:"The Way of the Champion", author:"Paul Rabil", tags:["Performance","Resilience","Mindset"], cover:true, missing:["audio"] },
+  { slug:"who-needs-friends", title:"Who Needs Friends?", author:"Andrew McCarthy", tags:["Relationships","Wellbeing"], cover:true, missing:["images","audio"] },
+  { slug:"your-word-is-your-wand", title:"Your Word Is Your Wand", author:"Florence Scovel Shinn", tags:["Spirituality","Mindset"], cover:true },
+];
+</script>
+<!-- ==================== stop editing here ==================== -->
 
 <script>
-const stages = {
-  ds: {
-    badge: 'DS',
-    title: 'Discovery',
-    color: 'var(--stage-ds)',
-    note: 'Qualification lives here — a matching game, not a judgment call',
-    activities: [
-      'They own land — or are replacing a home on their lot — <em>cleared, with utilities</em> in place or realistically planned',
-      'The lot is <em>buildable</em> — zoned for a manufactured home and not in a flood zone. <em>Check it here, not at the sales agreement</em>',
-      'Cash confirmed, or a financing path identified — <em>income and debts on the table before any application or hard pull</em>',
-      'Budget covers home <em>plus site work</em> — their numbers, not averages',
-      '<em>IN, MI, OH, WI, TN, FL — we run the whole job.</em> There is nothing for them to manage, so don\'t sell it as their problem',
-      '<em>Any other state — we deliver the home and they run the job.</em> That one is a real qualifier: break it into pieces, don\'t dump every detail',
-      '"Needs to see homes in person" is a <em>disqualifier, not an objection to overcome</em>',
-      'Turnkey shopper? Refer them out and move on'
-    ],
-    exits: [
-      'Land: owned, cleared, utilities confirmed',
-      'Lot is buildable — zoning and flood zone checked',
-      'Cash or financing path confirmed',
-      'Budget covers home + site work — their numbers',
-      'Which model applies — we run the job, or they do',
-      'Not a fit → referred out, or dated follow-up with a named trigger'
-    ],
-    tip: 'Your job isn\'t to close everyone — <strong>win fast, lose faster.</strong> An objection you "overcame" at Discovery doesn\'t die; it\'s waiting for you at Application. Yes is an answer, no is an answer — a deal lingering unqualified isn\'t.'
-  },
-  he: {
-    badge: 'HE',
-    title: 'Home Estimate',
-    color: 'var(--stage-he)',
-    note: null,
-    activities: [
-      '<em>Nothing gets an estimate until Discovery is closed.</em> Give a price on the phone all day — but an estimate is a document, and a document makes people feel finished',
-      'We close <em>12-15%</em> of the estimates we send. Aim for <em>20%</em> by sending fewer, not by following up harder',
-      'The estimate review is a <em>scheduled call you walk together</em> — never "I\'ll send you stuff"',
-      'Customer homework (building department, township approvals) <em>cleared before the review</em> — estimate after blockers, not before',
-      'Full cost on the table: setup, utilities, site work — cheapest ≠ best value',
-      'Cash: <em>collect the deposit</em> at the estimate review',
-      'They have an action item? Book the placeholder: <em>"I don\'t want to interrupt your day — mind if we set a 5-minute touch base for Tuesday at 2?"</em>'
-    ],
-    exits: [
-      'Discovery closed before this estimate existed',
-      'Estimate reviewed live with the customer',
-      'Full cost covered — no site-work surprises later',
-      'Customer blockers cleared or dated',
-      'Cash: deposit in',
-      'Next step has a date and time'
-    ],
-    tip: 'If they\'ve got homework between now and next time, <strong>book the placeholder before you hang up.</strong> Five minutes on the calendar beats an email with "follow up" in the subject line.'
-  },
-  ap: {
-    badge: 'AP',
-    title: 'Application',
-    color: 'var(--stage-ap)',
-    note: 'Finance deals — cash moves ahead',
-    activities: [
-      'Application submitted <em>complete and transparent</em> — nothing for the lender to discover',
-      'Payment-comfort conversation happens <em>before</em> approval: monthly amount, 25 years, what\'s left in reserve — <em>"How do you feel about that payment for the next 25 years?"</em>',
-      'Anything that was a problem at Discovery <em>resurfaces here</em> — requalify before you submit',
-      'Keep the next step dated — an application sitting quiet is an open door for competitors'
-    ],
-    exits: [
-      'Application submitted, complete',
-      'Payment comfort confirmed — in their words',
-      'Old objections re-checked, not assumed gone',
-      'Next step dated'
-    ],
-    tip: 'The application wait is when competitors strike — that\'s where the Habeck deal went. <strong>A dated next step keeps you in the deal;</strong> silence hands it to whoever calls them next.'
-  },
-  dc: {
-    badge: 'DC',
-    title: 'Docs',
-    color: 'var(--stage-dc)',
-    note: null,
-    activities: [
-      'Lender reviews <em>full documents before approving</em> — days, not hours. Set that expectation up front.',
-      'Proactive status updates while they wait — <em>a quiet file feels like a stalled deal</em> to the customer',
-      'Watch loan expiration dates — a stale approval is a dead deal',
-      'Denied → <em>note why</em>, so the next application doesn\'t repeat it'
-    ],
-    exits: [
-      'Docs in, complete — nothing outstanding',
-      'Customer knows the timeline and expects the wait',
-      'Approved → next step on the calendar'
-    ],
-    tip: 'Cold feet at Docs means the payment conversation didn\'t happen at Application. <strong>If you\'re hearing fear here, stop and have it now</strong> — before the approval, not after.'
-  },
-  in: {
-    badge: 'IN',
-    title: 'Installer',
-    color: 'var(--stage-in)',
-    note: null,
-    activities: [
-      'Site work scoped and installer lined up — <em>these numbers feed the sales agreement</em>',
-      'You\'re the project manager: <em>permits, soil tests, zoning</em> — ask <em>"When will you have that done?"</em> and write it down',
-      'Construction consultant introduced and looped in',
-      'Two weeks of silence → <em>pick up the phone</em>'
-    ],
-    exits: [
-      'Installer confirmed, site work quoted',
-      'Customer task list dated',
-      'Consultant introduced'
-    ],
-    tip: 'Customers hit dates they set <strong>with you, on a calendar.</strong> Ask when, write it down, follow up that day.'
-  },
-  sa: {
-    badge: 'SA',
-    title: 'Sales Agreement',
-    color: 'var(--stage-sa)',
-    note: null,
-    activities: [
-      'The agreement is a <em>recap, not a reveal</em> — every number matches the estimate and installer quote they\'ve already seen',
-      'Signed + <em>down payment collected</em>',
-      'Walk the road to Sold so they know exactly what happens next — and when'
-    ],
-    exits: [
-      'Agreement signed',
-      'Down payment in the system',
-      'Next check-in dated'
-    ],
-    tip: 'No surprises at signing. <strong>If a number shows up here they haven\'t seen before, the deal wobbles</strong> — surface every cost back at Home Estimate and Installer.'
-  },
-  so: {
-    badge: 'SO',
-    title: 'Sold',
-    color: 'var(--stage-so)',
-    note: null,
-    activities: [
-      'Handoff is clean: consultant, install dates, and <em>who they call</em> with questions',
-      'Log the win — <em>what made them a good fit</em> sharpens the Discovery checklist',
-      'Lost one along the way? Log <em>deal name, what happened at the end, and the stage</em> — same document, same reason'
-    ],
-    exits: [
-      'Handoff complete — customer knows what\'s next',
-      'Win or loss logged with its stage'
-    ],
-    tip: 'Every finished deal — won or lost — teaches the Discovery checklist something. <strong>Log it while it\'s fresh.</strong>'
-  }
+/* The four deliverable formats. You rarely change these — but labels/colors are here. */
+const TYPE_ORDER = ["spoken","insights","images","audio"];
+const TYPES = {
+  spoken:  { label:"Speechify", file:"spoken.docx",  kind:"docx",
+             tagline:"The whole book, taught in flowing narration — built to listen to in Speechify.",
+             c1:"#3B82F6", c2:"#4F46E5" },
+  insights:{ label:"Outline", file:"insights.pdf", kind:"pdf",
+             tagline:"What's most worth remembering and doing — the key insights and the actions that follow.",
+             c1:"#F59E0B", c2:"#EA580C" },
+  images:  { label:"Images", file:"images.pdf", kind:"pdf",
+             tagline:"The ideas turned into images. No text — memory triggers you can flip through.",
+             c1:"#10B981", c2:"#059669" },
+  audio:   { label:"Images + Speechify", file:"audio.pdf", kind:"pdf",
+             tagline:"Every image, explained aloud, in a teaching sequence — built for Speechify.",
+             c1:"#A855F7", c2:"#EC4899" },
 };
 
-let checkedItems = JSON.parse(localStorage.getItem('hn_gates_v3') || '{}');
-let currentStage = 'ds';
+/* ============================================================================
+   IN-APP CONTENT  —  optional. If a book+format has an entry here, its page
+   renders natively in the app (styled, interactive) instead of embedding a PDF.
+   To add one:  "<slug>": { insights: { coreIdea, points:[{h,b}], actions:[] } }
+   ============================================================================ */
+const CONTENT = {
+  "the-alter-ego-effect": {
+    insights: {
+      coreIdea: "You already have everything you need inside you. An Alter Ego is a deliberate, heroic version of yourself that you step into on your \"Field of Play\" — the specific arena where you most want to perform. It isn't pretending; it's a tool that lets your most capable self take over when self-doubt tries to run the show.",
+      points: [
+        { h:"Name your Field of Play", b:"Pick the one arena that matters most right now — a sales call, the stage, the gym. The Alter Ego is activated there, not everywhere at once." },
+        { h:"Separate your two selves", b:"The Trapped Self reacts out of fear and old stories; the Heroic Self is who you want leading. Naming the gap between them is what lets you close it." },
+        { h:"Give the Enemy a face", b:"Turn resistance, doubt, and procrastination into a named opponent outside you — something to beat, not evidence that something's wrong with you." },
+        { h:"Build it from traits you admire", b:"Borrow qualities from people you respect, real or fictional. You're not inventing a fake person — you're choosing which of your own capacities to lead with." },
+        { h:"Use a Totem to flip the switch", b:"A physical trigger — glasses, a bracelet, a jersey — becomes the cue that you're stepping in, the way Clark Kent's glasses signal the change. Put it on, become the Alter Ego." },
+      ],
+      actions: [
+        "Pick the one Field of Play where you most want to show up differently this week.",
+        "Write down the story your Enemy tells you — then give it a name.",
+        "Choose your Alter Ego and the three traits it leads with, and who inspires it.",
+        "Choose a Totem you'll wear or carry that activates it.",
+        "Before your next rep on that Field of Play, put on the Totem and step in.",
+      ],
+    },
+  },
+};
 
-function showStage(id) {
-  currentStage = id;
-  const s = stages[id];
+/* ---------- icons ---------- */
+const P='stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+const ICON={
+  home:`<svg viewBox="0 0 24 24"><path ${P} d="M3 11.4 12 4l9 7.4"/><path ${P} d="M5.5 10v9.5h13V10"/></svg>`,
+  type:`<svg viewBox="0 0 24 24"><path ${P} d="M12 3 3 8l9 5 9-5-9-5Z"/><path ${P} d="M3 13l9 5 9-5"/></svg>`,
+  tag:`<svg viewBox="0 0 24 24"><path ${P} d="M3.5 3.5h7L21 14l-6.5 6.5L4 10V3.5Z"/><circle ${P} cx="7.6" cy="7.6" r="1.5"/></svg>`,
+  book:`<svg viewBox="0 0 24 24"><path ${P} d="M12 6c-2-1.5-5-1.5-8 0v13c3-1.5 6-1.5 8 0 2-1.5 6-1.5 8 0V6c-3-1.5-6-1.5-8 0Z"/><path ${P} d="M12 6v13"/></svg>`,
+  chev:`<svg viewBox="0 0 24 24"><path ${P} d="m6 9 6 6 6-6"/></svg>`,
+  back:`<svg viewBox="0 0 24 24"><path ${P} d="M15 6l-6 6 6 6"/></svg>`,
+  check:`<svg viewBox="0 0 24 24"><path ${P} d="m5 13 4 4L19 7"/></svg>`,
+  menu:`<svg viewBox="0 0 24 24"><path ${P} d="M3 6h18M3 12h18M3 18h18"/></svg>`,
+  search:`<svg viewBox="0 0 24 24"><circle ${P} cx="11" cy="11" r="7"/><path ${P} d="m21 21-4.3-4.3"/></svg>`,
+  sun:`<svg viewBox="0 0 24 24"><circle ${P} cx="12" cy="12" r="4"/><path ${P} d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6 19 19M19 5l-1.4 1.4M6.4 17.6 5 19"/></svg>`,
+  moon:`<svg viewBox="0 0 24 24"><path ${P} d="M20 14.4A8 8 0 1 1 9.6 4 6.5 6.5 0 0 0 20 14.4Z"/></svg>`,
+  close:`<svg viewBox="0 0 24 24"><path ${P} d="M6 6 18 18M18 6 6 18"/></svg>`,
+  open:`<svg viewBox="0 0 24 24"><path ${P} d="M14 4h6v6"/><path ${P} d="M20 4 10.5 13.5"/><path ${P} d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>`,
+  download:`<svg viewBox="0 0 24 24"><path ${P} d="M12 4v10"/><path ${P} d="m8 11 4 4 4-4"/><path ${P} d="M5 20h14"/></svg>`,
+  copy:`<svg viewBox="0 0 24 24"><rect ${P} x="9" y="9" width="11" height="11" rx="2"/><path ${P} d="M5 15V5a2 2 0 0 1 2-2h8"/></svg>`,
+  spoken:`<svg viewBox="0 0 24 24"><path ${P} d="M4 13v-1a8 8 0 0 1 16 0v1"/><rect ${P} x="3" y="13" width="4" height="7" rx="1.4"/><rect ${P} x="17" y="13" width="4" height="7" rx="1.4"/></svg>`,
+  insights:`<svg viewBox="0 0 24 24"><path ${P} d="M9.5 18h5M10 21h4"/><path ${P} d="M12 3a6 6 0 0 0-3.8 10.6c.8.7 1.2 1.3 1.3 2.4h5c.1-1.1.5-1.7 1.3-2.4A6 6 0 0 0 12 3Z"/></svg>`,
+  images:`<svg viewBox="0 0 24 24"><rect ${P} x="3" y="4" width="18" height="16" rx="2.2"/><circle ${P} cx="8.5" cy="9.5" r="1.7"/><path ${P} d="m4 17.5 5-5 4 4 3-3 4 4"/></svg>`,
+  audio:`<svg viewBox="0 0 24 24"><circle ${P} cx="12" cy="12" r="9"/><path ${P} d="m10 8.4 6 3.6-6 3.6Z"/></svg>`,
+};
 
-  document.querySelectorAll('.rail-node').forEach(n => {
-    n.classList.toggle('active', n.dataset.stage === id);
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const has=(b,k)=>!(b.missing||[]).includes(k);
+const fileUrl=(b,k)=>`files/${b.slug}/${TYPES[k].file}`;
+const bookBySlug=s=>BOOKS.find(b=>b.slug===s);
+const allTopics=()=>[...new Set(BOOKS.flatMap(b=>b.tags||[]))].sort((a,b)=>a.localeCompare(b));
+let searchQuery="";
+
+function tags(list,link){
+  return `<div class="chips">${(list||[]).map(t=>{
+    const h=`#/tag/${encodeURIComponent(t)}`;
+    return link ? `<a class="chip" href="${h}">${esc(t)}</a>` : `<span class="chip">${esc(t)}</span>`;
+  }).join("")}</div>`;
+}
+
+/* ---------- views ---------- */
+function tileHTML(b){
+  const cover = b.cover ? `<div class="tile-cover"><img src="files/${b.slug}/cover.jpg" alt="" onerror="this.closest('.tile-cover').remove()"></div>` : "";
+  return `<a class="tile" href="#/book/${b.slug}">
+    ${cover}
+    <div class="tile-title">${esc(b.title)}</div>
+    <div class="tile-author">${esc(b.author)}</div>
+  </a>`;
+}
+
+function renderHome(){
+  let list=BOOKS.slice();
+  const q=searchQuery.trim().toLowerCase();
+  if(q){
+    list=list.filter(b=>(b.title+" "+b.author+" "+(b.tags||[]).join(" ")).toLowerCase().includes(q));
+  }
+  const head = q
+    ? `<div class="page-head"><div class="eyebrow">Search</div><h1 class="page-title">“${esc(searchQuery.trim())}”</h1></div>`
+    : `<div class="page-head"><div class="eyebrow">Library</div><h1 class="page-title">All books</h1></div>`;
+  const body = list.length
+    ? `<div class="grid">${list.map(tileHTML).join("")}</div>`
+    : `<div class="empty"><h1 class="page-title">Nothing here yet</h1><p>No books match that${q?' search':''}. Try clearing the search, or add a book in the BOOKS list.</p></div>`;
+  return head+body;
+}
+
+function renderTag(tag){
+  const list=BOOKS.filter(b=>(b.tags||[]).includes(tag));
+  const head=`<div class="page-head"><div class="eyebrow">Topic</div><h1 class="page-title">${esc(tag)}</h1></div>`;
+  const body=list.length
+    ? `<div class="grid">${list.map(tileHTML).join("")}</div>`
+    : `<div class="empty"><h1 class="page-title">${esc(tag)}</h1><p>No books tagged ${esc(tag)} yet.</p></div>`;
+  return head+body;
+}
+
+function renderBook(slug){
+  const b=bookBySlug(slug);
+  if(!b) return `<div class="empty"><h1 class="page-title">Book not found</h1><p><a class="chip" href="#/">Back to the library</a></p></div>`;
+  const cards=TYPE_ORDER.map(k=>{
+    const t=TYPES[k];
+    if(!has(b,k)){
+      return `<div class="deliv missing">
+        <span class="deliv-ico">${ICON[k]}</span>
+        <span class="deliv-name">${esc(t.label)}</span>
+        <span class="deliv-act">Not yet built</span>
+      </div>`;
+    }
+    const url=fileUrl(b,k);
+    const grad=`background:linear-gradient(135deg,${t.c1},${t.c2});box-shadow:0 16px 38px -14px ${t.c2}`;
+    if(t.kind==="docx"){
+      // Spoken Companion: clicking copies the narration text to the clipboard (paste into Speechify);
+      // the small pill downloads the .docx itself, which keeps the Word heading navigation.
+      return `<div class="deliv" role="button" tabindex="0" data-file="${url}" data-act="copy" data-title="${esc(b.title)}" style="${grad}">
+        <span class="deliv-ico">${ICON[k]}</span>
+        <span class="deliv-name">${esc(t.label)}</span>
+        <div class="deliv-actrow">
+          <span class="deliv-act">${ICON.copy}<span>Copy for Speechify</span></span>
+          <a class="deliv-dl" href="${url}" data-file="${url}" data-act="download" aria-label="Download the Word file" title="Download the .docx">${ICON.download}</a>
+        </div>
+      </div>`;
+    }
+    return `<a class="deliv" href="#/view/${b.slug}/${k}" style="${grad}">
+      <span class="deliv-ico">${ICON[k]}</span>
+      <span class="deliv-name">${esc(t.label)}</span>
+      <span class="deliv-act">${ICON.open}<span>Open</span></span>
+    </a>`;
+  }).join("");
+  return `<div class="page-head">
+      <div class="eyebrow">Study Companion</div>
+      <h1 class="page-title">${esc(b.title)}</h1>
+      <p class="page-sub">${esc(b.author)}</p>
+      <div style="margin-top:12px">${tags(b.tags,true)}</div>
+    </div>
+    <div class="chooser">${cards}</div>`;
+}
+
+function renderType(key){
+  const t=TYPES[key];
+  if(!t) return renderHome();
+  const list=BOOKS.filter(b=>has(b,key));
+  const isDoc=t.kind==="docx";
+  const cards=list.map(b=>{
+    const url=fileUrl(b,key);
+    const href=isDoc?url:`#/view/${b.slug}/${key}`;
+    const attrs=isDoc?`data-file="${url}" data-act="copy" data-title="${esc(b.title)}" rel="noopener" title="Copy for Speechify"`:`title="Open"`;
+    return `<a class="tcard" href="${href}" ${attrs}>
+      <span class="tcard-ico" style="background:linear-gradient(135deg,${t.c1},${t.c2})">${ICON[key]}</span>
+      <span class="tcard-main">
+        <span class="tcard-title">${esc(b.title)}</span>
+        <span class="tcard-author">${esc(b.author)}</span>
+      </span>
+      <span class="tcard-act">${isDoc?ICON.copy:ICON.open}</span>
+    </a>`;
+  }).join("");
+  return `<div class="page-head">
+      <div class="eyebrow">Format</div>
+      <h1 class="page-title" style="background:linear-gradient(120deg,${t.c1},${t.c2});-webkit-background-clip:text;background-clip:text;color:transparent">${esc(t.label)}</h1>
+      <p class="page-sub">${esc(t.tagline)}</p>
+    </div>
+    ${list.length?`<div class="type-grid">${cards}</div>`:`<div class="empty"><p>No ${esc(t.label)} files yet.</p></div>`}`;
+}
+
+/* ---------- deliverables: copy / open / download, with graceful missing-file handling ---------- */
+let toastTimer=null;
+function showToast(html){
+  const el=$("#toast"); if(!el) return;
+  el.innerHTML=html; el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove("show"),3200);
+}
+async function fileExists(url){
+  try{ const r=await fetch(url,{method:"HEAD"}); return r.ok; }catch(e){ return false; }
+}
+const missingMsg=url=>`Not uploaded yet — add <code>${esc(url)}</code> to the repo.`;
+
+async function openFile(url){
+  const w=window.open("","_blank");            // open synchronously to keep the click gesture
+  if(await fileExists(url)){ if(w) w.location.href=url; else window.location.href=url; }
+  else { if(w) w.close(); showToast(missingMsg(url)); }
+}
+async function downloadFile(url){
+  if(!(await fileExists(url))){ showToast(missingMsg(url)); return; }
+  const a=document.createElement("a"); a.href=url; a.download="";
+  document.body.appendChild(a); a.click(); a.remove();
+}
+async function copyText(text){
+  try{ if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return true; } }catch(e){}
+  try{
+    const ta=document.createElement("textarea"); ta.value=text;
+    ta.style.position="fixed"; ta.style.top="-1000px"; document.body.appendChild(ta);
+    ta.focus(); ta.select(); const ok=document.execCommand("copy"); ta.remove(); return ok;
+  }catch(e){ return false; }
+}
+async function copySpoken(url,title){
+  showToast("Preparing the text…");
+  let buf;
+  try{ const r=await fetch(url); if(!r.ok) throw 0; buf=await r.arrayBuffer(); }
+  catch(e){ showToast(missingMsg(url)); return; }
+  if(!window.mammoth){ showToast("Couldn't load the reader — use the download button to get the .docx."); return; }
+  let text="";
+  try{ const out=await window.mammoth.extractRawText({arrayBuffer:buf}); text=(out.value||"").trim(); }
+  catch(e){ showToast("Couldn't read that file — try the download button."); return; }
+  if(!text){ showToast("That file looks empty."); return; }
+  const ok=await copyText(text);
+  showToast(ok ? `“${esc(title||"Spoken Companion")}” copied — paste it into Speechify.`
+              : "Couldn't reach the clipboard — use the download button instead.");
+}
+function handleDeliv(e){
+  const el=e.target.closest("[data-file]"); if(!el) return;
+  const act=el.getAttribute("data-act"); if(!act) return;
+  e.preventDefault();
+  const url=el.getAttribute("data-file");
+  if(act==="copy") copySpoken(url, el.getAttribute("data-title"));
+  else if(act==="download") downloadFile(url);
+  else openFile(url);
+}
+
+/* ---------- PDF deliverables: in-app viewer pages ---------- */
+function delivHead(b,t){
+  return `<div class="page-head">
+    <a class="chip backlink" href="#/book/${b.slug}">${ICON.back}<span>${esc(b.title)}</span></a>
+    <div class="eyebrow">${esc(b.author)}</div>
+    <h1 class="page-title" style="background:linear-gradient(120deg,${t.c1},${t.c2});-webkit-background-clip:text;background-clip:text;color:transparent">${esc(t.label)}</h1>
+  </div>`;
+}
+function renderViewer(slug,key){
+  const b=bookBySlug(slug), t=TYPES[key];
+  if(!b||!t||t.kind!=="pdf") return renderHome();
+  return delivHead(b,t)+`
+    <div id="viewer-top"></div>
+    <div id="viewer-mount"><div class="pdf-frame pdf-loading">Loading…</div></div>`;
+}
+async function hydrateViewer(slug,key){
+  const b=bookBySlug(slug), t=TYPES[key];
+  if(!b||!t) return;
+  const mount=$("#viewer-mount"), top=$("#viewer-top");
+  if(!mount) return;
+  const url=fileUrl(b,key);
+  let present=true;
+  try{ const r=await fetch(url,{method:"HEAD",cache:"no-store"}); present=r.ok; }
+  catch(e){ present=true; }        // HEAD blocked (e.g. local file preview) -> let the frame try
+  if(present){
+    top.innerHTML=`<div class="viewer-top">
+      <a class="vbtn vbtn-primary" href="${url}" target="_blank" rel="noopener" style="background:linear-gradient(135deg,${t.c1},${t.c2})">${ICON.open}<span>Open in new tab</span></a>
+      <a class="vbtn" href="${url}" download>${ICON.download}<span>Download</span></a>
+    </div>`;
+    mount.innerHTML=`<iframe class="pdf-frame" src="${url}" title="${esc(t.label)} — ${esc(b.title)}"></iframe>`;
+  }else{
+    top.innerHTML="";
+    mount.innerHTML=`<div class="state-card" style="border-left-color:${t.c2}">
+      <p class="state-title">Not built yet</p>
+      <p>Drop <code>${esc(t.file)}</code> into <code>files/${b.slug}/</code> and it opens right here, inside the app.</p>
+    </div>`;
+  }
+}
+
+/* ---------- native content page (renders CONTENT entries) ---------- */
+function renderContent(slug,key,c){
+  const b=bookBySlug(slug), t=TYPES[key];
+  if(!b||!t) return renderHome();
+  const lede = c.coreIdea ? `<div class="lede">${esc(c.coreIdea)}</div>` : "";
+  const points=(c.points||[]).map(p=>
+    `<div class="ins"><div class="ins-h">${esc(p.h)}</div><div class="ins-b">${esc(p.b)}</div></div>`).join("");
+  const insBlock = points ? `<h2 class="sec-h">Key insights</h2><div class="ins-list">${points}</div>` : "";
+  const acts=(c.actions||[]).map((a,i)=>
+    `<label class="chk"><input type="checkbox" data-ck="${slug}:${key}:${i}"><span class="chk-box">${ICON.check}</span><span class="chk-txt">${esc(a)}</span></label>`).join("");
+  const actBlock = acts ? `<h2 class="sec-h">Put it to work</h2><div class="chk-list">${acts}</div>` : "";
+  return delivHead(b,t)+`<div class="content" style="--acc:${t.c2};--acc1:${t.c1}">${lede}${insBlock}${actBlock}</div>`;
+}
+function hydrateContent(slug,key){
+  document.querySelectorAll('input[data-ck]').forEach(cb=>{
+    const id='sl-ck:'+cb.getAttribute('data-ck');
+    let on=false; try{ on=localStorage.getItem(id)==='1'; }catch(e){}
+    cb.checked=on; cb.closest('.chk').classList.toggle('done',on);
+    cb.addEventListener('change',()=>{
+      cb.closest('.chk').classList.toggle('done',cb.checked);
+      try{ localStorage.setItem(id, cb.checked?'1':'0'); }catch(e){}
+    });
+  });
+}
+
+/* ---------- sidebar ---------- */
+function buildSidebar(){
+  const typeLinks=TYPE_ORDER.map(k=>{
+    const t=TYPES[k];
+    return `<a class="nav-link" data-route="#/type/${k}" href="#/type/${k}">
+      <span class="dotmark" style="background:linear-gradient(135deg,${t.c1},${t.c2})"></span>${esc(t.label)}
+    </a>`;
+  }).join("");
+  const topicLinks=allTopics().map(t=>
+    `<a class="nav-link" data-route="#/tag/${encodeURIComponent(t)}" href="#/tag/${encodeURIComponent(t)}">${ICON.tag}${esc(t)}</a>`
+  ).join("");
+  const bookLinks=BOOKS.slice().sort((a,b)=>a.title.localeCompare(b.title)).map(b=>
+    `<a class="nav-link" data-route="#/book/${b.slug}" href="#/book/${b.slug}">${ICON.book}${esc(b.title)}</a>`
+  ).join("");
+
+  $("#nav").innerHTML=`
+    <a class="nav-link" data-route="#/" href="#/">${ICON.home}Home</a>
+    <div class="sec" data-sec>
+      <button class="sec-head" data-sec-toggle aria-expanded="true">By type<span class="chev">${ICON.chev}</span></button>
+      <div class="sec-body">${typeLinks}</div>
+    </div>
+    <div class="sec" data-sec>
+      <button class="sec-head" data-sec-toggle aria-expanded="true">Topics<span class="chev">${ICON.chev}</span></button>
+      <div class="sec-body">${topicLinks}</div>
+    </div>
+    <div class="sec collapsed" data-sec>
+      <button class="sec-head" data-sec-toggle aria-expanded="false">All books<span class="chev">${ICON.chev}</span></button>
+      <div class="sec-body">${bookLinks}</div>
+    </div>`;
+}
+
+/* ---------- routing ---------- */
+function parseSK(rest){ const i=rest.lastIndexOf("/"); return { slug:decodeURIComponent(rest.slice(0,i)), key:rest.slice(i+1) }; }
+function router(){
+  const h=location.hash||"#/";
+  let html, after=null;
+  if(h.startsWith("#/book/")) html=renderBook(decodeURIComponent(h.slice(7)));
+  else if(h.startsWith("#/view/")){ const {slug,key}=parseSK(h.slice(7)); const c=(CONTENT[slug]||{})[key];
+    if(c){ html=renderContent(slug,key,c); after=()=>hydrateContent(slug,key); }
+    else { html=renderViewer(slug,key); after=()=>hydrateViewer(slug,key); } }
+  else if(h.startsWith("#/type/")) html=renderType(h.slice(7));
+  else if(h.startsWith("#/tag/")) html=renderTag(decodeURIComponent(h.slice(6)));
+  else html=renderHome();
+  const view=$("#view"); view.innerHTML=html; view.scrollTo?.(0,0); window.scrollTo(0,0);
+  // active nav state
+  document.querySelectorAll('.nav-link').forEach(a=>{
+    a.classList.toggle('active', a.getAttribute('data-route')===h);
+  });
+  if(after) after();
+  if(window.matchMedia("(max-width:999px)").matches) setNav(false);
+}
+
+/* ---------- nav open/close ---------- */
+function setNav(on){ document.body.classList.toggle('nav-on', on); }
+function toggleNav(){ setNav(!document.body.classList.contains('nav-on')); }
+
+/* ---------- theme ---------- */
+function setTheme(mode){
+  document.documentElement.setAttribute('data-theme',mode);
+  const dark=mode==='dark';
+  $("#theme-ico").innerHTML = dark?ICON.sun:ICON.moon;
+  $("#theme-label").textContent = dark?'Light mode':'Dark mode';
+  try{ localStorage.setItem('sl-theme',mode); }catch(e){}
+}
+function toggleTheme(){
+  setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');
+}
+
+/* ---------- init ---------- */
+function init(){
+  // theme: default light, remember choice
+  let saved='light';
+  try{ saved=localStorage.getItem('sl-theme')||'light'; }catch(e){}
+  setTheme(saved);
+
+  buildSidebar();
+
+  // section collapsibles
+  document.querySelectorAll('[data-sec-toggle]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const sec=btn.closest('[data-sec]');
+      const open=sec.classList.toggle('collapsed');
+      btn.setAttribute('aria-expanded', String(!open));
+    });
   });
 
-  const panel = document.getElementById('stage-panel');
-  const stageChecks = checkedItems[id] || [];
+  // events
+  $("#menu-btn").addEventListener('click',toggleNav);
+  $("#side-close").addEventListener('click',()=>setNav(false));
+  $("#scrim").addEventListener('click',()=>setNav(false));
+  $("#theme-btn").addEventListener('click',toggleTheme);
 
-  panel.innerHTML = `
-    <div class="panel-header">
-      <div class="panel-badge" style="background:${s.color}; color:#fff;">${s.badge}</div>
-      <div class="panel-title">${s.title}</div>
-      ${s.note ? `<div class="panel-note">${s.note}</div>` : ''}
+  // deliverable clicks (copy / open / download) — one delegated listener
+  document.addEventListener('click',handleDeliv);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '){
+      const el=e.target.closest?.('[data-act="copy"]');
+      if(el){ e.preventDefault(); copySpoken(el.getAttribute('data-file'), el.getAttribute('data-title')); }
+    }
+  });
+
+  const input=$("#search-input"), clear=$("#search-clear");
+  input.addEventListener('input',()=>{
+    searchQuery=input.value;
+    clear.classList.toggle('show', !!searchQuery);
+    if(searchQuery && location.hash!=="#/") location.hash="#/"; // routes to home, then renders
+    else router();
+  });
+  clear.addEventListener('click',()=>{ input.value=""; searchQuery=""; clear.classList.remove('show'); router(); input.focus(); });
+
+  window.addEventListener('hashchange',()=>{
+    if(location.hash && location.hash!=="#/"){ input.value=""; searchQuery=""; } // navigating away drops the search
+    clear.classList.toggle('show', !!searchQuery);
+    router();
+  });
+
+  // default nav state: open on desktop, closed on mobile
+  setNav(window.matchMedia("(min-width:1000px)").matches);
+
+  router();
+}
+</script>
+
+<!-- ==================== markup ==================== -->
+<div class="topbar">
+  <button class="icon-btn" id="menu-btn" aria-label="Toggle menu"></button>
+  <div class="spacer"></div>
+</div>
+
+<aside class="sidebar" aria-label="Library navigation">
+  <div class="brand">
+    <a class="brand-mark" href="#/" aria-label="Home"></a>
+    <a class="brand-name" href="#/">Study Library</a>
+    <button class="icon-btn side-close" id="side-close" aria-label="Close menu"></button>
+  </div>
+  <div class="search">
+    <div class="search-wrap">
+      <span id="search-ico"></span>
+      <input id="search-input" type="search" placeholder="Search books" autocomplete="off" spellcheck="false" aria-label="Search books">
+      <button class="search-clear" id="search-clear" aria-label="Clear search"></button>
     </div>
-    <div class="panel-grid">
-      <div class="card">
-        <div class="card-label">What Happens Here</div>
-        <ul>${s.activities.map(a => `<li>${a}</li>`).join('')}</ul>
-      </div>
-      <div class="card exit-card" style="border-left-color:${s.color}">
-        <div class="card-label" style="color:${s.color}">
-          <span>Before You Move On</span>
-          <span style="margin-left:auto;font-size:10px;opacity:0.6;font-weight:400;letter-spacing:0">${stageChecks.length}/${s.exits.length}</span>
-        </div>
-        <ul>${s.exits.map((e, i) =>
-          `<li class="${stageChecks.includes(i) ? 'checked' : ''}" onclick="toggleCheck('${id}', ${i})">${e}</li>`
-        ).join('')}</ul>
-      </div>
-      <div class="coaching-tip">
-        <div class="tip-icon">📌</div>
-        <div class="tip-text">${s.tip}</div>
-      </div>
-    </div>
-  `;
+  </div>
+  <nav class="nav" id="nav"></nav>
+  <div class="theme-row">
+    <button class="theme-btn" id="theme-btn" aria-label="Toggle light and dark mode">
+      <span id="theme-ico"></span><span id="theme-label">Dark mode</span>
+    </button>
+  </div>
+</aside>
 
-  panel.style.animation = 'none';
-  panel.offsetHeight;
-  panel.style.animation = 'panelIn 0.3s ease';
+<div class="scrim" id="scrim"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  updateResetBtn();
-}
+<main>
+  <div class="wrap"><div id="view"></div></div>
+</main>
 
-function toggleCheck(stageId, idx) {
-  if (!checkedItems[stageId]) checkedItems[stageId] = [];
-  const arr = checkedItems[stageId];
-  const pos = arr.indexOf(idx);
-  if (pos > -1) arr.splice(pos, 1);
-  else arr.push(idx);
-  localStorage.setItem('hn_gates_v3', JSON.stringify(checkedItems));
-  showStage(currentStage);
-}
-
-function resetChecks() {
-  checkedItems = {};
-  localStorage.setItem('hn_gates_v3', JSON.stringify(checkedItems));
-  showStage(currentStage);
-}
-
-function updateResetBtn() {
-  const btn = document.getElementById('resetBtn');
-  const hasChecks = Object.values(checkedItems).some(a => a.length > 0);
-  btn.classList.toggle('visible', hasChecks);
-}
-
-// Keyboard nav
-document.addEventListener('keydown', e => {
-  const keys = Object.keys(stages);
-  const idx = keys.indexOf(currentStage);
-  if (e.key === 'ArrowRight' && idx < keys.length - 1) showStage(keys[idx + 1]);
-  if (e.key === 'ArrowLeft' && idx > 0) showStage(keys[idx - 1]);
-});
-
-showStage('ds');
+<script>
+/* fill static icons that live in markup */
+document.getElementById('menu-btn').innerHTML=ICON.menu;
+document.querySelector('.brand-mark').innerHTML=ICON.book;
+document.getElementById('side-close').innerHTML=ICON.close;
+document.getElementById('search-ico').innerHTML=ICON.search;
+document.getElementById('search-clear').innerHTML=ICON.close;
+document.getElementById('theme-ico').innerHTML=ICON.moon;
+init();
 </script>
 </body>
 </html>
